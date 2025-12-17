@@ -6,9 +6,11 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import com.audition.common.exception.SystemException;
 import com.audition.common.logging.AuditionLogger;
 import io.micrometer.common.util.StringUtils;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -17,44 +19,54 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-
+/**
+ * Global Exception Handler.
+ * Uses RFC 7807 ProblemDetail to return standardized error responses.
+ */
 @ControllerAdvice
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     public static final String DEFAULT_TITLE = "API Error Occurred";
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionControllerAdvice.class);
-    private static final String ERROR_MESSAGE = " Error Code from Exception could not be mapped to a valid HttpStatus Code - ";
     private static final String DEFAULT_MESSAGE = "API Error occurred. Please contact support or administrator.";
 
     @Autowired
-    private AuditionLogger logger;
+    private transient AuditionLogger auditionLogger;
 
     @ExceptionHandler(HttpClientErrorException.class)
     ProblemDetail handleHttpClientException(final HttpClientErrorException e) {
-        return createProblemDetail(e, e.getStatusCode());
-
-    }
-
-
-    @ExceptionHandler(Exception.class)
-    ProblemDetail handleMainException(final Exception e) {
-        // TODO Add handling for Exception
-        final HttpStatusCode status = getHttpStatusCodeFromException(e);
-        return createProblemDetail(e, status);
-
+        final ProblemDetail problemDetail = createProblemDetail(e, e.getStatusCode());
+        auditionLogger.logStandardProblemDetail(LOG, problemDetail, e);
+        return problemDetail;
     }
 
     @ExceptionHandler(SystemException.class)
     ProblemDetail handleSystemException(final SystemException e) {
-        // TODO `Add Handling for SystemException
         final HttpStatusCode status = getHttpStatusCodeFromSystemException(e);
-        return createProblemDetail(e, status);
-
+        final ProblemDetail problemDetail = createProblemDetail(e, status);
+        auditionLogger.logStandardProblemDetail(LOG, problemDetail, e);
+        return problemDetail;
     }
 
+    // Handles validation errors (e.g. non-numeric IDs)
+    @ExceptionHandler(ConstraintViolationException.class)
+    ProblemDetail handleValidationException(final ConstraintViolationException e) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Validation Error");
+        problemDetail.setDetail(e.getMessage());
+        auditionLogger.logStandardProblemDetail(LOG, problemDetail, e);
+        return problemDetail;
+    }
 
-    private ProblemDetail createProblemDetail(final Exception exception,
-        final HttpStatusCode statusCode) {
+    @ExceptionHandler(Exception.class)
+    ProblemDetail handleMainException(final Exception e) {
+        final HttpStatusCode status = getHttpStatusCodeFromException(e);
+        final ProblemDetail problemDetail = createProblemDetail(e, status);
+        auditionLogger.logStandardProblemDetail(LOG, problemDetail, e);
+        return problemDetail;
+    }
+
+    private ProblemDetail createProblemDetail(final Exception exception, final HttpStatusCode statusCode) {
         final ProblemDetail problemDetail = ProblemDetail.forStatus(statusCode);
         problemDetail.setDetail(getMessageFromException(exception));
         if (exception instanceof SystemException) {
@@ -74,11 +86,15 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     private HttpStatusCode getHttpStatusCodeFromSystemException(final SystemException exception) {
         try {
-            return HttpStatusCode.valueOf(exception.getStatusCode());
+            if (exception.getStatusCode() != null) {
+                return HttpStatusCode.valueOf(exception.getStatusCode());
+            }
         } catch (final IllegalArgumentException iae) {
-            logger.info(LOG, ERROR_MESSAGE + exception.getStatusCode());
-            return INTERNAL_SERVER_ERROR;
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Provided status code {} is invalid, defaulting to 500", exception.getStatusCode());
+            }
         }
+        return INTERNAL_SERVER_ERROR;
     }
 
     private HttpStatusCode getHttpStatusCodeFromException(final Exception exception) {
