@@ -22,5 +22,7 @@ management:
       exposure:
         include: 'info,health' # Secured: Only expose info and health
 logging:
+  level:
+    com.audition: DEBUG
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
