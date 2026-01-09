@@ -14,8 +14,8 @@ class AuditionApplicationTests {
     private transient AuditionController controller;
 
     /**
-     * Sanity check to ensure the Spring Application Context loads successfully.
-     * This verifies that all beans (Controllers, Services, Configurations) are wired correctly.
+     * Sanity check to ensure the Spring Application Context loads successfully. This verifies that all beans
+     * (Controllers, Services, Configurations) are wired correctly.
      */
     @Test
     void contextLoads() {

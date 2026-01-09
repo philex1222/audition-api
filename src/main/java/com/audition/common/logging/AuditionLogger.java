@@ -45,8 +45,8 @@ public class AuditionLogger {
     }
 
     /**
-     * Standardized logging for RFC 7807 ProblemDetails.
-     * Ensures that all API errors are logged with consistent structure including Status, Title, and Detail.
+     * Standardized logging for RFC 7807 ProblemDetails. Ensures that all API errors are logged with consistent
+     * structure including Status, Title, and Detail.
      */
     public void logStandardProblemDetail(final Logger logger, final ProblemDetail problemDetail, final Exception e) {
         if (logger.isErrorEnabled()) {
@@ -67,10 +67,10 @@ public class AuditionLogger {
         }
         // Formats the ProblemDetail into a single loggable string
         return String.format("ProblemDetail: Status=%s, Title='%s', Detail='%s', Instance='%s'",
-                standardProblemDetail.getStatus(),
-                standardProblemDetail.getTitle(),
-                standardProblemDetail.getDetail(),
-                standardProblemDetail.getInstance());
+            standardProblemDetail.getStatus(),
+            standardProblemDetail.getTitle(),
+            standardProblemDetail.getDetail(),
+            standardProblemDetail.getInstance());
     }
 
     private String createBasicErrorResponseMessage(final Integer errorCode, final String message) {

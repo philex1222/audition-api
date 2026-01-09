@@ -20,8 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
- * Global Exception Handler.
- * Uses RFC 7807 ProblemDetail to return standardized error responses.
+ * Global Exception Handler. Uses RFC 7807 ProblemDetail to return standardized error responses.
  */
 @ControllerAdvice
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {

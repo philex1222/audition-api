@@ -33,12 +33,12 @@ public class WebServiceConfiguration implements WebMvcConfigurer {
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper()
-                .setDateFormat(new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN, Locale.ENGLISH))
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            .setDateFormat(new SimpleDateFormat(YEAR_MONTH_DAY_PATTERN, Locale.ENGLISH))
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @Bean
@@ -49,8 +49,8 @@ public class WebServiceConfiguration implements WebMvcConfigurer {
 
         // Ensure RestTemplate uses our configured ObjectMapper
         restTemplate.getMessageConverters().stream()
-                .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
-                .forEach(converter -> ((MappingJackson2HttpMessageConverter) converter).setObjectMapper(objectMapper));
+            .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
+            .forEach(converter -> ((MappingJackson2HttpMessageConverter) converter).setObjectMapper(objectMapper));
 
         // Observability: Log request/response details for debugging
         restTemplate.setInterceptors(Collections.singletonList(new LoggingInterceptor()));
@@ -65,15 +65,16 @@ public class WebServiceConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * Interceptor to log outgoing requests and incoming responses.
-     * Essential for debugging integration issues in production environments.
+     * Interceptor to log outgoing requests and incoming responses. Essential for debugging integration issues in
+     * production environments.
      */
     private static class LoggingInterceptor implements ClientHttpRequestInterceptor {
+
         private static final Logger LOG = LoggerFactory.getLogger(LoggingInterceptor.class);
 
         @Override
         public ClientHttpResponse intercept(final HttpRequest request, final byte[] body,
-                                            final ClientHttpRequestExecution execution) throws IOException {
+            final ClientHttpRequestExecution execution) throws IOException {
             logRequest(request, body);
             final ClientHttpResponse response = execution.execute(request, body);
             logResponse(response);
@@ -83,14 +84,14 @@ public class WebServiceConfiguration implements WebMvcConfigurer {
         private void logRequest(final HttpRequest request, final byte[] body) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request: {} {} Body: {}", request.getMethod(), request.getURI(),
-                        new String(body, StandardCharsets.UTF_8));
+                    new String(body, StandardCharsets.UTF_8));
             }
         }
 
         private void logResponse(final ClientHttpResponse response) throws IOException {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Response: {} {} Body: {}", response.getStatusCode(), response.getStatusText(),
-                        StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8));
+                    StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8));
             }
         }
     }

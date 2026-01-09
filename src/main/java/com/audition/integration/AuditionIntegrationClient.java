@@ -28,11 +28,11 @@ public class AuditionIntegrationClient {
     public List<AuditionPost> getPosts() {
         try {
             final ResponseEntity<List<AuditionPost>> response = restTemplate.exchange(
-                    BASE_URL + "/posts",
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<>() {
-                    }
+                BASE_URL + "/posts",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {
+                }
             );
             return response.getBody() != null ? response.getBody() : Collections.emptyList();
         } catch (final HttpClientErrorException e) {
@@ -49,7 +49,8 @@ public class AuditionIntegrationClient {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 throw new SystemException("Cannot find a Post with id " + id, "Resource Not Found", 404, e);
             } else {
-                throw new SystemException("Error fetching post " + id, UNKNOWN_ERROR_MESSAGE, e.getStatusCode().value(), e);
+                throw new SystemException("Error fetching post " + id, UNKNOWN_ERROR_MESSAGE, e.getStatusCode().value(),
+                    e);
             }
         }
     }
@@ -69,7 +70,8 @@ public class AuditionIntegrationClient {
             final AuditionComment[] comments = restTemplate.getForObject(url, AuditionComment[].class);
             return comments != null ? Arrays.asList(comments) : Collections.emptyList();
         } catch (final HttpClientErrorException e) {
-            throw new SystemException("Error fetching comments for post " + postId, UNKNOWN_ERROR_MESSAGE, e.getStatusCode().value(), e);
+            throw new SystemException("Error fetching comments for post " + postId, UNKNOWN_ERROR_MESSAGE,
+                e.getStatusCode().value(), e);
         }
     }
 

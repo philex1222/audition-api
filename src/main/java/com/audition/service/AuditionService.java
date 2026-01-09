@@ -22,8 +22,8 @@ public class AuditionService {
     }
 
     /**
-     * Retrieves a post and enriches it with its associated comments.
-     * This demonstrates data composition at the service layer.
+     * Retrieves a post and enriches it with its associated comments. This demonstrates data composition at the service
+     * layer.
      *
      * @param postId The ID of the post
      * @return AuditionPost containing the list of comments

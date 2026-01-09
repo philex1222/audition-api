@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuditionPost {
+
     private int userId;
     private int id;
     private String title;

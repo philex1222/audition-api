@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Filter to inject Trace and Span IDs into HTTP Response headers.
- * This allows clients to report these IDs back to support teams for easier log correlation.
+ * Filter to inject Trace and Span IDs into HTTP Response headers. This allows clients to report these IDs back to
+ * support teams for easier log correlation.
  */
 @Component
 public class ResponseHeaderInjector implements Filter {
@@ -23,7 +23,7 @@ public class ResponseHeaderInjector implements Filter {
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
 
         if (response instanceof HttpServletResponse && tracer.currentSpan() != null) {
             final HttpServletResponse httpServletResponse = (HttpServletResponse) response;

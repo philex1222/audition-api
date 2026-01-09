@@ -25,8 +25,8 @@ public class AuditionController {
 
     @RequestMapping(value = "/posts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<AuditionPost> getPosts(
-            @RequestParam(value = "title", required = false) final String titleFilter,
-            @RequestParam(value = "body", required = false) final String bodyFilter) {
+        @RequestParam(value = "title", required = false) final String titleFilter,
+        @RequestParam(value = "body", required = false) final String bodyFilter) {
 
         List<AuditionPost> posts = auditionService.getPosts();
 
@@ -34,14 +34,14 @@ public class AuditionController {
         // In a database-backed application, this should be pushed down to the SQL layer.
         if (titleFilter != null && !titleFilter.isEmpty()) {
             posts = posts.stream()
-                    .filter(p -> p.getTitle().contains(titleFilter))
-                    .collect(Collectors.toList());
+                .filter(p -> p.getTitle().contains(titleFilter))
+                .collect(Collectors.toList());
         }
 
         if (bodyFilter != null && !bodyFilter.isEmpty()) {
             posts = posts.stream()
-                    .filter(p -> p.getBody().contains(bodyFilter))
-                    .collect(Collectors.toList());
+                .filter(p -> p.getBody().contains(bodyFilter))
+                .collect(Collectors.toList());
         }
 
         return posts;
@@ -49,9 +49,9 @@ public class AuditionController {
 
     @RequestMapping(value = "/posts/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody AuditionPost getPostById(
-            // Input Validation: Ensure ID is numeric to prevent malformed requests to upstream
-            @PathVariable("id") @Pattern(regexp = "^[0-9]+$", message = "Post ID must be numeric") final String postId,
-            @RequestParam(value = "withComments", required = false, defaultValue = "false") final boolean withComments) {
+        // Input Validation: Ensure ID is numeric to prevent malformed requests to upstream
+        @PathVariable("id") @Pattern(regexp = "^[0-9]+$", message = "Post ID must be numeric") final String postId,
+        @RequestParam(value = "withComments", required = false, defaultValue = "false") final boolean withComments) {
 
         if (withComments) {
             return auditionService.getPostWithComments(postId);
@@ -61,7 +61,7 @@ public class AuditionController {
 
     @RequestMapping(value = "/posts/{id}/comments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<AuditionComment> getCommentsForPost(
-            @PathVariable("id") @Pattern(regexp = "^[0-9]+$", message = "Post ID must be numeric") final String postId) {
+        @PathVariable("id") @Pattern(regexp = "^[0-9]+$", message = "Post ID must be numeric") final String postId) {
         return auditionService.getComments(postId);
     }
 }

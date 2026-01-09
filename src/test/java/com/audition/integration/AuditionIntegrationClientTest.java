@@ -40,10 +40,10 @@ class AuditionIntegrationClientTest {
         final ResponseEntity<List<AuditionPost>> response = ResponseEntity.ok(List.of(post));
 
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                eq(null),
-                ArgumentMatchers.<ParameterizedTypeReference<List<AuditionPost>>>any())
+            anyString(),
+            eq(HttpMethod.GET),
+            eq(null),
+            ArgumentMatchers.<ParameterizedTypeReference<List<AuditionPost>>>any())
         ).thenReturn(response);
 
         final List<AuditionPost> result = client.getPosts();
@@ -65,7 +65,7 @@ class AuditionIntegrationClientTest {
     void shouldGetPostByIdNotFound() {
         // Simulates a 404 from upstream to ensure our client wraps it in a SystemException with 404 status
         when(restTemplate.getForObject(anyString(), eq(AuditionPost.class), anyString()))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         final SystemException exception = assertThrows(SystemException.class, () -> client.getPostById("999"));
         assertEquals(404, exception.getStatusCode());
@@ -76,7 +76,7 @@ class AuditionIntegrationClientTest {
     void shouldGetPostByIdServerError() {
         // Simulates a 500 from upstream to ensure our client defaults to 500
         when(restTemplate.getForObject(anyString(), eq(AuditionPost.class), anyString()))
-                .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         final SystemException exception = assertThrows(SystemException.class, () -> client.getPostById("1"));
         assertEquals(500, exception.getStatusCode());
@@ -102,11 +102,13 @@ class AuditionIntegrationClientTest {
         final AuditionComment[] comments = {comment};
 
         // Mocking sequential calls to build the composite object
-        when(restTemplate.getForObject(eq("https://jsonplaceholder.typicode.com/posts/{id}"), eq(AuditionPost.class), eq("1")))
-                .thenReturn(post);
+        when(restTemplate.getForObject(eq("https://jsonplaceholder.typicode.com/posts/{id}"), eq(AuditionPost.class),
+            eq("1")))
+            .thenReturn(post);
 
-        when(restTemplate.getForObject(eq("https://jsonplaceholder.typicode.com/posts/1/comments"), eq(AuditionComment[].class)))
-                .thenReturn(comments);
+        when(restTemplate.getForObject(eq("https://jsonplaceholder.typicode.com/posts/1/comments"),
+            eq(AuditionComment[].class)))
+            .thenReturn(comments);
 
         final AuditionPost result = client.getPostWithComments("1");
 

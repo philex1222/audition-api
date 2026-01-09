@@ -53,7 +53,8 @@ public class SystemException extends RuntimeException {
         this.detail = detail;
     }
 
-    public SystemException(final String detail, final String title, final Integer errorCode, final Throwable exception) {
+    public SystemException(final String detail, final String title, final Integer errorCode,
+        final Throwable exception) {
         super(detail, exception);
         this.statusCode = errorCode;
         this.title = title;

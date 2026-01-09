@@ -38,8 +38,8 @@ class AuditionControllerTest {
         when(auditionService.getPosts()).thenReturn(List.of(post));
 
         mockMvc.perform(get("/posts"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Test Title"));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].title").value("Test Title"));
     }
 
     @Test
@@ -53,9 +53,9 @@ class AuditionControllerTest {
         when(auditionService.getPosts()).thenReturn(List.of(post1, post2));
 
         mockMvc.perform(get("/posts").param("title", "Java"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].title").value("Java"));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].title").value("Java"));
     }
 
     @Test
@@ -63,6 +63,6 @@ class AuditionControllerTest {
     void shouldValidatePostId() throws Exception {
         // Tests that the @Pattern validation on the Controller works
         mockMvc.perform(get("/posts/abc"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 }

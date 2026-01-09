@@ -55,8 +55,8 @@ class AuditionIntegrationTest {
             """;
 
         mockServer.expect(requestTo("https://jsonplaceholder.typicode.com/posts"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
 
         // When
         final List<AuditionPost> posts = auditionService.getPosts();
@@ -83,8 +83,8 @@ class AuditionIntegrationTest {
             """;
 
         mockServer.expect(requestTo("https://jsonplaceholder.typicode.com/posts/202"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
 
         // When
         final AuditionPost post = auditionService.getPostById("202");
@@ -101,8 +101,8 @@ class AuditionIntegrationTest {
     void shouldHandleUpstream404Error() {
         // Given: The upstream API returns 404
         mockServer.expect(requestTo("https://jsonplaceholder.typicode.com/posts/999"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // When/Then: Our client should wrap this in a SystemException with 404 status
         final SystemException exception = assertThrows(SystemException.class, () -> auditionService.getPostById("999"));
