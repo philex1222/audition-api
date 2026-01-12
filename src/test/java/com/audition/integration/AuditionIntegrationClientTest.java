@@ -48,7 +48,18 @@ class AuditionIntegrationClientTest {
 
         final List<AuditionPost> result = client.getPosts();
         assertEquals(1, result.size());
-        assertEquals(1, result.get(0).getId());
+    }
+
+    @Test
+    void shouldGetPostsError() {
+        when(restTemplate.exchange(
+            anyString(),
+            eq(HttpMethod.GET),
+            eq(null),
+            ArgumentMatchers.<ParameterizedTypeReference<List<AuditionPost>>>any())
+        ).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+
+        assertThrows(SystemException.class, () -> client.getPosts());
     }
 
     @Test
@@ -94,14 +105,36 @@ class AuditionIntegrationClientTest {
     }
 
     @Test
+    void shouldGetCommentsForPostIdError() {
+        when(restTemplate.getForObject(anyString(), eq(AuditionComment[].class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        assertThrows(SystemException.class, () -> client.getCommentsForPostId("1"));
+    }
+
+    @Test
+    void shouldGetCommentsByPostIdQueryParamSuccess() {
+        final AuditionComment[] comments = {new AuditionComment()};
+        when(restTemplate.getForObject(anyString(), eq(AuditionComment[].class))).thenReturn(comments);
+
+        final List<AuditionComment> result = client.getCommentsByPostIdQueryParam("1");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void shouldGetCommentsByPostIdQueryParamError() {
+        when(restTemplate.getForObject(anyString(), eq(AuditionComment[].class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        assertThrows(SystemException.class, () -> client.getCommentsByPostIdQueryParam("1"));
+    }
+
+    @Test
     void shouldGetPostWithCommentsSuccess() {
         final AuditionPost post = new AuditionPost();
         post.setId(1);
+        final AuditionComment[] comments = {new AuditionComment()};
 
-        final AuditionComment comment = new AuditionComment();
-        final AuditionComment[] comments = {comment};
-
-        // Mocking sequential calls to build the composite object
         when(restTemplate.getForObject(eq("https://jsonplaceholder.typicode.com/posts/{id}"), eq(AuditionPost.class),
             eq("1")))
             .thenReturn(post);

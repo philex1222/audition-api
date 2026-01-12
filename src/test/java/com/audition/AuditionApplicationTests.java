@@ -22,4 +22,9 @@ class AuditionApplicationTests {
         assertThat(controller).isNotNull();
     }
 
+    @Test
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+    void main() {
+        AuditionApplication.main(new String[]{});
+    }
 }
